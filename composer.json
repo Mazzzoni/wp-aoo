@@ -1,0 +1,16 @@
+{
+    "name": "frast/wp-aoo",
+    "authors": [
+        {
+            "name": "François Steinel",
+            "email": "francois.steinel@gmail.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "Frast\\": "src/"
+        }
+    }
+}
