@@ -2,9 +2,9 @@
     "name": "frast/wp-aoo",
     "type": "library",
     "description": "This package aims to handle the Wordpress ajax part in a object oriented way",
-    "homepage": "https://francois-steinel.fr/en/wp-aoo",
+    "homepage": "https://francois-steinel.fr/en/article/wordpress-ajax-an-object-oriented-way",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "authors": [
         {
             "name": "François Steinel",
