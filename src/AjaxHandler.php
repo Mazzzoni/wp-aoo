@@ -18,6 +18,12 @@ abstract class AjaxHandler
 	/** @var bool */
 	protected $inFooter = true;
 
+	/** @var string The value of the nonce */
+	private $nonce = '';
+
+	/** @var string The name of the nonce variable (which will be used in js files) */
+	private $nonceName = '';
+
 	/**
 	 * Get the name of the js file that will handle ajax requests
 	 */
@@ -38,6 +44,8 @@ abstract class AjaxHandler
 		$this
 			->setHandler()
 			->setAssetSrc(static::getAssetSrc())
+			->createNonce()
+			->registerNonce()
 			->enqueueActions()
 			->enqueueScript()
 		;
@@ -106,8 +114,14 @@ abstract class AjaxHandler
 
 	private function enqueueActions(): self
 	{
-		add_action("wp_ajax_{$this->handler}", [$this, 'treatment']);
-		add_action("wp_ajax_nopriv_{$this->handler}", [$this, 'treatment']);
+		/** @var callable */
+		$callTreatment = function () {
+			check_ajax_referer($this->nonceName, 'nonce');
+			$this->treatment();
+		};
+
+		add_action("wp_ajax_{$this->handler}", $callTreatment);
+		add_action("wp_ajax_nopriv_{$this->handler}", $callTreatment);
 
 		return $this;
 	}
@@ -118,6 +132,22 @@ abstract class AjaxHandler
 			wp_enqueue_script($this->handler, $this->assetSrc, $this->dependencies, $this->version, $this->inFooter);
 		});
 
+		return $this;
+	}
+
+	private function createNonce(): self
+	{
+		$this->nonceName = 'nonce' . $this->handler;
+		$this->nonce = wp_create_nonce($this->nonceName);
+		return $this;
+	}
+
+	private function registerNonce(): self
+	{
+		add_action('wp_head', function () {
+			echo "<script>var {$this->nonceName} = '{$this->nonce}';</script>";
+		});
+		
 		return $this;
 	}
 }
