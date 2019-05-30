@@ -128,9 +128,23 @@ abstract class AjaxHandler
 
 	private function enqueueScript(): self
 	{
-		add_action('wp_enqueue_scripts', function () {
-			wp_enqueue_script($this->handler, $this->assetSrc, $this->dependencies, $this->version, $this->inFooter);
-		});
+		if ( !empty($this->assetSrc) )
+		{
+			add_action('wp_enqueue_scripts', function () {
+				wp_enqueue_script($this->handler, $this->assetSrc, $this->dependencies, $this->version, $this->inFooter);
+			});
+		}
+		else
+		{
+			if ( !method_exists($this, 'javascript') )
+			{
+				throw new \RuntimeException("If you don't specify a source for your javascript file, then you must define a public function javascript() method that return your javascript that'll be injected.");
+			}
+
+			add_action('wp_footer', function () {
+				echo $this->javascript();
+			}, 50);
+		}
 
 		return $this;
 	}
