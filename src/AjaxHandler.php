@@ -27,7 +27,7 @@ abstract class AjaxHandler
 	/**
 	 * Get the name of the js file that will handle ajax requests
 	 */
-	abstract static public function getAssetSrc(): string;
+	abstract public function getAssetSrc(): string;
 
 	/**
 	 * How the handler will handle requests
@@ -43,7 +43,7 @@ abstract class AjaxHandler
 
 		$this
 			->setHandler()
-			->setAssetSrc(static::getAssetSrc())
+			->setAssetSrc($this->getAssetSrc())
 			->createNonce()
 			->registerNonce()
 			->enqueueActions()
