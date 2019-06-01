@@ -24,6 +24,9 @@ abstract class AjaxHandler
 	/** @var string The name of the nonce variable (which will be used in js files) */
 	private $nonceName = '';
 
+	/** @var array Actions that the handler makes */
+	private $actions = [];
+
 	/**
 	 * Get the name of the js file that will handle ajax requests
 	 */
@@ -39,8 +42,6 @@ abstract class AjaxHandler
 	 */
 	public function load(): void
 	{
-		if ( $this->conditions() === false ) return;
-
 		$this
 			->setHandler()
 			->setAssetSrc($this->getAssetSrc())
@@ -57,6 +58,11 @@ abstract class AjaxHandler
 	public function conditions(): bool
 	{
 		return true;
+	}
+
+	public function getActions(): array
+	{
+		return $this->actions;
 	}
 
 	protected function getHandler(): string
@@ -112,6 +118,14 @@ abstract class AjaxHandler
 		return $this;
 	}
 
+	protected function addAction(string $name, callable $callable): void
+	{
+		$this->actions[] = [
+			'name' => $name,
+			'callable' => $callable,
+		];
+	}
+
 	private function enqueueActions(): self
 	{
 		/** @var callable */
@@ -120,8 +134,8 @@ abstract class AjaxHandler
 			$this->treatment();
 		};
 
-		add_action("wp_ajax_{$this->handler}", $callTreatment);
-		add_action("wp_ajax_nopriv_{$this->handler}", $callTreatment);
+		$this->addAction("wp_ajax_{$this->handler}", $callTreatment);
+		$this->addAction("wp_ajax_nopriv_{$this->handler}", $callTreatment);
 
 		return $this;
 	}
@@ -130,7 +144,7 @@ abstract class AjaxHandler
 	{
 		if ( !empty($this->assetSrc) )
 		{
-			add_action('wp_enqueue_scripts', function () {
+			$this->addAction('wp_enqueue_scripts', function () {
 				wp_enqueue_script($this->handler, $this->assetSrc, $this->dependencies, $this->version, $this->inFooter);
 			});
 		}
@@ -141,7 +155,7 @@ abstract class AjaxHandler
 				throw new \RuntimeException("If you don't specify a source for your javascript file, then you must define a public function javascript() method that return your javascript that'll be injected.");
 			}
 
-			add_action('wp_footer', function () {
+			$this->addAction('wp_footer', function () {
 				echo $this->javascript();
 			}, 50);
 		}
@@ -158,7 +172,7 @@ abstract class AjaxHandler
 
 	private function registerNonce(): self
 	{
-		add_action('wp_head', function () {
+		$this->addAction('wp_head', function () {
 			echo "<script>var {$this->nonceName} = '{$this->nonce}';</script>";
 		});
 		
