@@ -165,7 +165,7 @@ abstract class AjaxHandler
 
 	private function createNonce(): self
 	{
-		$this->nonceName = 'nonce' . $this->handler;
+		$this->nonceName = $this->handler . 'Nonce';
 		$this->nonce = wp_create_nonce($this->nonceName);
 		return $this;
 	}
