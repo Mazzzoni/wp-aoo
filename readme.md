@@ -6,6 +6,6 @@ You can find how to use it here :
 [https://francois-steinel.fr/en/article/wordpress-ajax-an-object-oriented-way](https://francois-steinel.fr/en/article/wordpress-ajax-an-object-oriented-way)
 
 You can also find a demo of it here :  
-[https://github.com/Frast42/demo-wp-aoo](https://github.com/Frast42/demo-wp-aoo)
+[https://github.com/Mazzzoni/demo-wp-aoo](https://github.com/Mazzzoni/demo-wp-aoo)
 
 Use it if you like it !
